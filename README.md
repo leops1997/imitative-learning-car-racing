@@ -4,6 +4,10 @@
 
 https://github.com/openai/gym/blob/master/gym/envs/box2d/car_racing.py
 
+## bibliography 
+
+https://towardsdatascience.com/beginners-guide-to-loading-image-data-with-pytorch-289c60b7afec
+
 ## Libraries:
 
 1. gym (<code>pip install gym</code>)
