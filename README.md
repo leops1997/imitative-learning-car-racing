@@ -8,6 +8,8 @@ https://github.com/openai/gym/blob/master/gym/envs/box2d/car_racing.py
 
 https://towardsdatascience.com/beginners-guide-to-loading-image-data-with-pytorch-289c60b7afec
 
+https://www.learnpytorch.io/pytorch_most_common_errors/
+
 ## Libraries:
 
 1. gym (<code>pip install gym</code>)
