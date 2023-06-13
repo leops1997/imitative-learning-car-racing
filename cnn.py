@@ -8,6 +8,7 @@ class Net(nn.Module):
 
     def __init__(self):
         super(Net, self).__init__()
+                
         self.pool = nn.MaxPool2d(kernel_size=(2,2))
         self.conv1 = nn.Conv2d(3, 32, kernel_size=(8,8), stride=4)
         self.act1 = nn.ReLU()
@@ -17,11 +18,16 @@ class Net(nn.Module):
         self.act3 = nn.ReLU()
         self.fc4 = nn.Linear(512, 3)
         self.act4 = nn.Sigmoid()
-
+        
         self.loss_function = nn.BCELoss()
         self.optimizer = optim.Adam(self.parameters(), lr=0.0001)
+        
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Current device: {self.device}")
+        self.to(self.device)
 
     def forward(self, x):
+        x = x.to(self.device)
         x = self.pool(self.act1(self.conv1(x)))
         x = self.pool(self.act2(self.conv2(x)))
         x = torch.flatten(x, 1) #Linear needs 1 demensional vector
@@ -32,6 +38,8 @@ class Net(nn.Module):
     def train_model(self, trainset, testset, epochs, path):
         for i in range(epochs):
             for x, y in trainset:
+                x = x.to(torch.device(self.device))
+                y = y.to(torch.device(self.device))
                 y_pred = self(x)
                 target = torch.tensor(y).clone().detach().requires_grad_(True)
                 target_normalized = torch.sigmoid(target)
@@ -47,8 +55,9 @@ class Net(nn.Module):
             accuracy = 0
             count = 0
             for x, y in testset:
+                x = x.to(torch.device(self.device))
+                y = y.to(torch.device(self.device))
                 y_pred = self(x)
-                
                 accuracy += (torch.argmax(y_pred, 1) == y).float().sum()
                 count += len(y)
             accuracy /= count

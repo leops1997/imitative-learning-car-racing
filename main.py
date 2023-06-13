@@ -26,9 +26,9 @@ def load_data():
 
     return trainloader, testloader
 
-def agent(net):
+def agent(net, track):
     env = gym.make("CarRacing-v2", render_mode="human")
-    env.reset(seed=42) #choosing 42th map
+    env.reset(seed=track) #choosing 42th map
     terminated = False
     action = [0, 0, 0]
     while not terminated:
@@ -39,19 +39,19 @@ def agent(net):
         data = data.unsqueeze(0)
         data = data.transpose(1,3)
         action = torch.logit(net(data)).squeeze().tolist()
-
+        # if action[1] <0:
+        #     action[1] = 0
+        # elif action[2] <0:
+        #     action[2] = 0  
         print(action)
     env.close()
 
 if __name__=="__main__":
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Current device: {device}")
     train_dataset, test_dataset = load_data()
     net = cnn.Net()
-    # net.to(device)
     net.train()
-    net.train_model(train_dataset, test_dataset, 10, "data/")
+    net.train_model(train_dataset, test_dataset, 20, "data/")
     net.load_state_dict(torch.load("data/trained_model.pth"))
     net.eval()
     with torch.no_grad():
-        agent(net)
+        agent(net, 42)
