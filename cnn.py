@@ -43,25 +43,16 @@ class Net(nn.Module):
                 y_pred = self(x)
                 target = torch.tensor(y).clone().detach().requires_grad_(True)
                 target_normalized = torch.sigmoid(target)
-                # print(target_normalized)
-                # pred_normalized = torch.sigmoid(y_pred)
                 pred_normalized = y_pred
-                # print(torch.logit(pred_normalized))
                 loss = self.loss_function(pred_normalized, target_normalized)
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
 
-            accuracy = 0
-            count = 0
             for x, y in testset:
                 x = x.to(torch.device(self.device))
                 y = y.to(torch.device(self.device))
                 y_pred = self(x)
-                accuracy += (torch.argmax(y_pred, 1) == y).float().sum()
-                count += len(y)
-            accuracy /= count
             print(loss)
-            # print("Epoch %d: model accuracy %.2f%%" % (i, accuracy*100))
  
         torch.save(self.state_dict(), path+"trained_model.pth")
