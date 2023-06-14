@@ -1,12 +1,12 @@
+from torch.utils.data import TensorDataset, DataLoader, random_split
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional
 import torch.optim as optim
 
-
 class Net(nn.Module):
-
-    def __init__(self):
+    def __init__(self, batch_size):
         super(Net, self).__init__()
 
         # Build network        
@@ -26,7 +26,9 @@ class Net(nn.Module):
         # Compute model on selected device
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"Current device: {self.device}")
-        self.to(self.device) 
+        self.to(self.device)
+
+        self.batch_size = batch_size
 
     def forward(self, x):
         x = x.to(self.device) # Send data to selected device
@@ -37,7 +39,32 @@ class Net(nn.Module):
         x = self.act4(self.fc4(x))
         return x
     
-    def train_model(self, trainset, testset, epochs, path):
+    def load_data(self):
+        """
+        Load data from data/actions.npy and data/states.npy.
+        Transform data to tensor and create a DataLoader.
+        Split data between train data and test data.
+        """
+
+        # Load data from .npy and trasform to tensor.
+        path = "data/"
+        actions = torch.from_numpy(np.load(path+"actions.npy")).to(torch.float32)
+        states = torch.from_numpy(np.load(path+"states.npy")).to(torch.float32)
+        dataset = TensorDataset(states.transpose(1,3),actions)
+    
+        # Split data between train data and test data.
+        split = 0.75
+        train_batch = int(split * len(dataset))
+        test_batch = len(dataset) - train_batch
+        train_dataset, test_dataset = random_split(dataset, [train_batch, test_batch])
+
+        # Create a DataLoader.
+        trainloader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
+        testloader = DataLoader(test_dataset, batch_size=self.batch_size, shuffle=False)
+
+        return trainloader, testloader
+    
+    def train_model(self, epochs, path):
         """
         Train model with the trainset.
         Test model with the testset.
@@ -50,6 +77,7 @@ class Net(nn.Module):
         :return cost: List with the cost of each epoch
         :return accuracy: List with the accuracy of each epoch
         """
+        trainset, testset = self.load_data() 
         epoch_accuracy = 0
         epoch_loss = 0
         accuracy = []
