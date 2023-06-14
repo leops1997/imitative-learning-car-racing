@@ -6,6 +6,7 @@ from torch.utils.data import TensorDataset, DataLoader, random_split
 import torch
 import torchvision.datasets as datasets
 import torchvision.transforms as transform
+import imitate
 
 def load_data():
     """
@@ -67,4 +68,10 @@ if __name__=="__main__":
     net.load_state_dict(torch.load("data/trained_model.pth")) # load trained model
     net.eval() # evaluation mode
     with torch.no_grad(): # disable gradient calculation for inference
-        agent(net, 42)
+        env = gym.make("CarRacing-v2", render_mode="human")
+        model = net.load_state_dict(torch.load("data/trained_model.pth"))
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        track = 42
+        agent = imitate.Imitative_Agent(net, env, model, device, track)
+        agent.play_game()
+        #agent(net, 42)
