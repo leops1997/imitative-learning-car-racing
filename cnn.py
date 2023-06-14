@@ -9,12 +9,13 @@ class Net(nn.Module):
     def __init__(self, batch_size):
         super(Net, self).__init__()
 
-        # Build network        
-        self.pool = nn.MaxPool2d(kernel_size=(2,2))
+        # Build network       
         self.conv1 = nn.Conv2d(3, 32, kernel_size=(8,8), stride=4)
         self.act1 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(kernel_size=(2,2))
         self.conv2 = nn.Conv2d(32, 64, kernel_size=(4,4), stride=2)
         self.act2 = nn.ReLU()
+        self.pool2 = nn.MaxPool2d(kernel_size=(2,2))
         self.fc3 = nn.Linear(256, 512)
         self.act3 = nn.ReLU()
         self.fc4 = nn.Linear(512, 3)
@@ -32,8 +33,8 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = x.to(self.device) # Send data to selected device
-        x = self.pool(self.act1(self.conv1(x)))
-        x = self.pool(self.act2(self.conv2(x)))
+        x = self.pool1(self.act1(self.conv1(x)))
+        x = self.pool2(self.act2(self.conv2(x)))
         x = torch.flatten(x, 1) # Linear needs 1 demensional vector
         x = self.act3(self.fc3(x))
         x = self.act4(self.fc4(x))
