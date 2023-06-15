@@ -28,18 +28,22 @@ OBS: Box2D requires swig, so be aware of that.
 ## Usage
 
 ```bash
-python ./src/ag.py <epochs> <batch_size> <track>
+python ./src/ag.py <epochs> <batch_size> <track> <should-train>
 ```
 
 ### Default Values
 
-epochs = 20
+epochs = 100
 
 batch_size = 1
 
 track = 42
 
+should-train = 1 (True)
+
 OBS: Track must be an integer between 1 and 100
+
+OBS 2: should-train is a boolean, should be 0 (False) or 1 (True)
 
 This software will primarily look for a CUDA-enabled device. If it's unable to find one, it will use your CPU instead.
 
