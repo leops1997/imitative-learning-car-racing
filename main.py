@@ -10,7 +10,7 @@ if len(sys.argv) >= 4:
     batch_size = int(sys.argv[2])
     track = int(sys.argv[3])
 else:
-    epochs = 20
+    epochs = 100
     batch_size = 1
     track = 42
 
@@ -31,7 +31,7 @@ def plot_results():
 
 if __name__=="__main__":
     net = cnn.Net(batch_size)
-    manage_neural_network(net)
+    # manage_neural_network(net)
     plot_results()
     env = setup_game()
     agent = imitate.Imitative_Agent(net, env, track)
