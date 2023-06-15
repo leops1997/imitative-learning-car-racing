@@ -1,4 +1,5 @@
 import torch
+import pygame
 
 '''
 The purpose of this class is to manage the simulation after training the model
@@ -8,6 +9,14 @@ class Imitative_Agent():
         self.net = net
         self.env = env
         self.track = track
+    
+    # This function quit the game if ESC was pressed
+    def keyboard_quit(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return True
+        
 
     # This function sets the game up
     def play_game(self):
@@ -33,3 +42,5 @@ class Imitative_Agent():
                 # And, finallty, get the resultant action from the network
                 action = torch.logit(self.net(data)).squeeze().tolist()
                 print(action)
+
+                if self.keyboard_quit(): break
