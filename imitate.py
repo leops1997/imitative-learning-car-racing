@@ -1,4 +1,5 @@
 import torch
+import time
 import pygame
 
 '''
@@ -9,6 +10,7 @@ class Imitative_Agent():
         self.net = net
         self.env = env
         self.track = track
+        self.total_score = []
     
     # This function quit the game if ESC was pressed
     def keyboard_quit(self):
@@ -24,14 +26,17 @@ class Imitative_Agent():
         action = [0, 0, 0] # Then, we initialize the action array as [0, 0, 0] (car is stalled)
         self.main_game_loop(action) # Then, we initialize the main loop of the game
         self.env.close() # After we're done with the simulation, we close the environment
-    
+        return self.total_score
+
     def main_game_loop(self, action):
         with torch.no_grad(): # Disable gradient calculation for inference
             terminated = False 
+            score = 0
+            start_time = time.time()
             while not terminated:
                 self.env.render() # Here, we render the game
 
-                observation, reward, terminated, truncated, info = self.env.step(action)
+                observation, reward, terminated, truncated, _ = self.env.step(action)
                 state = observation # Getting the state of the car (as an image)
 
                 # Preprocessing the data 
@@ -43,4 +48,13 @@ class Imitative_Agent():
                 action = torch.logit(self.net(data)).squeeze().tolist()
                 print(action)
 
-                if self.keyboard_quit(): break
+                #Compute score
+                score += reward
+                lap_time = time.time() - start_time
+                self.total_score.append([score, lap_time])
+
+                # Compute lap
+                lap_percent = self.env.tile_visited_count / len(self.env.track)
+
+                # Quit game after one lap or ESC
+                if lap_percent == 1.0 or self.keyboard_quit(): break

@@ -47,6 +47,18 @@ def plot_accuracy(accuracy):
     plt.savefig("plot_accuracy_over_epochs.png")
     plt.show()
 
+def plot_score(score):
+    y = [item[0] for item in score]
+    x = [item[1] for item in score]
+    plt.plot(x, y)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Score')
+    plt.title('Score Value over time')
+    plt.text(x[-1], y[-1], f'({x[-1]:.2f}, {y[-1]:.2f})', ha='right', va='bottom')
+    plt.grid()
+    plt.savefig("plot_score_over_time.png")
+    plt.show()
+
 def plot_results(cost, accuracy):
     plot_cost(cost)
     plt.clf()
@@ -59,4 +71,5 @@ if __name__=="__main__":
         plot_results(cost, accuracy)
     env = setup_game()
     agent = imitate.Imitative_Agent(net, env, track)
-    agent.play_game() # And let the agent have fun =)
+    score = agent.play_game() # And let the agent have fun =)
+    plot_score(score)
